@@ -1,2 +1,2 @@
 # INF142-mandatory-assignment
-Mandatory assignment for INF142 due 09.04.21
+INF142 Mandatory assignment for group 38 due 09.04.21
