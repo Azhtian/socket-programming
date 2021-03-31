@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     # Capture data for 72 hours
     # Note that the simulation interval is 1 second
-    for _ in range(72):
+    for _ in range(10):
         # Sleep for 1 second to wait for new weather data
         # to be simulated
         sleep(1)

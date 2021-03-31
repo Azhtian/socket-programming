@@ -5,6 +5,6 @@ sock = socket(AF_INET, SOCK_STREAM)
 print("TCP Client")
 
 sock.connect(("localhost", 5555))
-data = "message"
+data = "TCP message"
 sock.send(data.encode())
 sock.close()
