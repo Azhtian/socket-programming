@@ -14,25 +14,24 @@ tcp_sock.listen()
 
 
 def connect_tcp(sock):
+
     conn, address = sock.accept()
     print("accepted", conn, "from", address)
     req = conn.recv(2048)
 
     available_data = get(req.decode())
-    conn.sendall(available_data.encode())
-    conn.close()
+    conn.sendall(available_data)
+    #conn.close()
     #print(f"From TCP client: {data.decode()}")
 
 
 def connect_udp(sock):
     data, address = sock.recvfrom(2048)
-    put(data.decode())
-    #print(f"From UDP client {address}: {data.decode()}")
+    put(data)
 
 
-
-def get(entire: str) -> str:
-    with open("storage.txt", "r") as f:
+def get(entire: str) -> bytes:
+    with open("storage.txt", "rb") as f:
         if entire == "last":
             lines = f.readlines()
             return lines[-1]
@@ -40,16 +39,16 @@ def get(entire: str) -> str:
             return f.read()
 
 
-def put(text: str) -> None:
-    with open("storage.txt", "a") as f:
-        f.write(text+"\n")
+def put(text: bytes) -> None:
+    with open("storage.txt", "ab") as f:
+        f.write(text+b"\n")
 
 
 sockets = [tcp_sock, udp_sock]
 
 while True:
-    inputready, _, _ = select(sockets, [], [])
-    for key in inputready:
+    input_ready, _, _ = select(sockets, [], [])
+    for key in input_ready:
         if key == tcp_sock:
             connect_tcp(key)
 

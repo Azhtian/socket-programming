@@ -1,9 +1,6 @@
-from socket import socket, AF_INET, SOCK_STREAM
+from socket import create_connection, socket, AF_INET, SOCK_STREAM
+sock= create_connection(("localhost", 8888))
 
-sock = socket(AF_INET, SOCK_STREAM)
-sock.connect(("localhost", 8888))
-
-print("TCP Client")
 print("Would you like to see whole weather forecast or just last update? \n whole/last ")
 request = input(">")
 if request.lower().startswith("w"):
