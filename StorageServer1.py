@@ -106,9 +106,9 @@ def connect_tcp(sock):
 
 if __name__ == '__main__':
 
-    # password = print("enter password for connect database: ")
-    # password = getpass()
-    SQL_storage = mysql.connector.connect(host='localhost', user='root', password="Sql96685204")
+    password = print("enter password for connect database: ")
+    password = getpass()
+    SQL_storage = mysql.connector.connect(host='localhost', user='root', password="password")
     my_cursor = SQL_storage.cursor()
     my_cursor.execute(f"CREATE DATABASE IF NOT EXISTS west")
     my_cursor.execute(f"CREATE DATABASE IF NOT EXISTS east")
