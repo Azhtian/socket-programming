@@ -1,5 +1,6 @@
 from socket import create_connection, socket, AF_INET, SOCK_STREAM
 
+
 def run() -> []:
     sock = create_connection(("localhost", 8888))
     print("Available locations:\n Oslo, Bergen, Stavanger....\n")
