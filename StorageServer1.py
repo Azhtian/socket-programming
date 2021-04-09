@@ -1,4 +1,4 @@
-from socket import socket, create_server, AF_INET, SOCK_DGRAM
+from socket import socket, create_server, AF_INET, SOCK_DGRAM, SOL_SOCKET, SO_REUSEADDR
 from select import select
 from datetime import datetime
 from getpass import getpass
@@ -98,17 +98,16 @@ def putMessage(data: str) -> None:
     # temp= float(temperature)
     print(station_name + " ", DATA_TIME, " " + temperature + " " + precipitation)
     my_cursor.execute(
-        f"INSERT INTO {station_name} VALUES ('{DATA_TIME}','{temperature}','{precipitation}');"
-
+        f"INSERT  INTO {station_name} VALUES ('{DATA_TIME}','{temperature}','{precipitation}');"
     )
-
+    SQL_storage.commit()
 
 if __name__ == '__main__':
-    db_name = input("enter database name: ")
-    print("enter password for connect database: ")
+    # db_name = input("enter database name: ")
+    # print("enter password for connect database: ")
     # password = input("enter password for connect database: ")
-    password = getpass()
-    SQL_storage = mysql.connector.connect(host='localhost', user='root', password=password, database=db_name)
+    # password = getpass()
+    SQL_storage = mysql.connector.connect(host='localhost', user='root', password='rykkje1011', database='weather')
     my_cursor = SQL_storage.cursor()
     create_dataBase("weather")
 
