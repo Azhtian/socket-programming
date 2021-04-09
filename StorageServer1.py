@@ -89,7 +89,7 @@ def connect_udp(sock):
     data, address = sock.recvfrom(2048)
     message = data.decode()
     if message[0:3] == "ctb":
-        create_table(message[4:-1].upper())
+        create_table(message[4:].upper())
     else:
         putMessage(message)
 
