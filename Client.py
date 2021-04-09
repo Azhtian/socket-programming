@@ -18,11 +18,7 @@ def run() -> []:
     elements = []
 
     while data := sock.recv(1024):
-        print(data.decode())
         elements.append(data.decode())
 
     sock.close()
     return elements
-
-run()
-
