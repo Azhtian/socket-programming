@@ -1,3 +1,4 @@
+import json
 from socket import socket, create_server, AF_INET, SOCK_DGRAM, SOL_SOCKET, SO_REUSEADDR
 from select import select
 from datetime import datetime
@@ -28,10 +29,9 @@ def create_table(station_name):
 def putMessage(data: str) -> None:
     # Puts the message into the corresponding table
     station_name, DATA_TIME, temperature, precipitation = data.split(",")
-
+    # precipitation = precipitation.strip("\n")
     DATA_TIME = datetime.strptime(DATA_TIME, "%d/%m/%Y %H:%M:%S")
     # temp= float(temperature)
-    print(station_name + " ", DATA_TIME, " " + temperature + " " + precipitation)
     db_name = determine_database(station_name)
     my_cursor.execute(f"USE {db_name};")
     my_cursor.execute(
@@ -49,7 +49,7 @@ def get(loc, entire: str) -> bytes:
 
 def get_all(loc):
     db_name = determine_database(loc)
-   # my_cursor.execute(f"USE {db_name};")
+    # my_cursor.execute(f"USE {db_name};")
     my_cursor.execute(f"SELECT * FROM {db_name}.{loc};")
     data = my_cursor.fetchall()
     print(data)
@@ -58,15 +58,12 @@ def get_all(loc):
 
 def get_last(loc):
     db_name = determine_database(loc)
-    #my_cursor.execute(f"USE {db_name};")
+    # my_cursor.execute(f"USE {db_name};")
     my_cursor.execute(
         f"SELECT * FROM {db_name}.{loc} WHERE DATA_TIME = (SELECT MAX(DATA_TIME) FROM {db_name}.{loc}) ;"
     )
 
     data = my_cursor.fetchall()
-
-    print("last data: ", data)
-
     return data
 
 
@@ -104,14 +101,14 @@ def connect_tcp(sock):
     available_data = get(loc, req)
 
     for data in available_data:
-        conn.sendall(f"Location: {loc} Time: {data[0]} temperature: {data[1]} precipitation: {data[2]}\n".encode())
+        conn.sendall(f"Location: {loc} Time: {data[0]} temperature: {data[1]} precipitation: {data[2]} ".encode())
 
 
 if __name__ == '__main__':
 
-    password = input("enter password for connect database: ")
-    password = getpass()
-    SQL_storage = mysql.connector.connect(host='localhost', user='root', password=password)
+    # password = print("enter password for connect database: ")
+    # password = getpass()
+    SQL_storage = mysql.connector.connect(host='localhost', user='root', password="Sql96685204")
     my_cursor = SQL_storage.cursor()
     my_cursor.execute(f"CREATE DATABASE IF NOT EXISTS west")
     my_cursor.execute(f"CREATE DATABASE IF NOT EXISTS east")

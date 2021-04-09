@@ -3,7 +3,8 @@ from time import sleep
 from station import *
 from socket import socket, AF_INET, SOCK_DGRAM
 
-class WeatherStation: #A WeatherStation is a station and a socket with some desirable methods
+
+class WeatherStation:  # A WeatherStation is a station and a socket with some desirable methods
     def __init__(self, location: str, sock: socket):
         self.station = StationSimulator(location=location, simulation_interval=1)
         self.sock = sock
@@ -15,7 +16,7 @@ class WeatherStation: #A WeatherStation is a station and a socket with some desi
         self.sock.sendto(f"ctb {self.station.location}".encode(), ("localhost", 8800))
 
     def sendData(self):
-        #print(f"{self.station.location},{time}, {self.station.temperature}, {self.station.rain}") #DebugPrint
+        # print(f"{self.station.location},{time}, {self.station.temperature}, {self.station.rain}") #DebugPrint
         self.sock.sendto(
             f"{self.station.location},{time}, {self.station.temperature}, {self.station.rain}".encode(),
             ("localhost", 8800))
@@ -24,8 +25,10 @@ class WeatherStation: #A WeatherStation is a station and a socket with some desi
         self.station.turn_on()
         self.createDatabase()
 
+
 def getTime():
     return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
 
 if __name__ == '__main__':
     sock = socket(AF_INET, SOCK_DGRAM)
