@@ -3,42 +3,52 @@ from time import sleep
 from station import *
 from socket import socket, AF_INET, SOCK_DGRAM
 
-sock = socket(AF_INET, SOCK_DGRAM)
+class WeatherStation: #A WeatherStation is a station and a socket with some desirable methods
+    def __init__(self, location: str, sock: socket):
+        self.station = StationSimulator(location=location, simulation_interval=1)
+        self.sock = sock
 
-Bergen_station = StationSimulator(simulation_interval=1)
-Bergen_station.turn_on()
-sock.sendto(f"ctb {Bergen_station.location} ".encode(), ("localhost", 8800))
+    def turnOn(self):
+        self.station.turn_on()
 
-Oslo_station = StationSimulator(location="Oslo", simulation_interval=1)
-Oslo_station.turn_on()
-sock.sendto(f"ctb {Oslo_station.location} ".encode(), ("localhost", 8800))
+    def createDatabase(self):
+        self.sock.sendto(f"ctb {self.station.location}".encode(), ("localhost", 8800))
 
-Stavanger_station = StationSimulator(location="Stavanger", simulation_interval=1)
-Stavanger_station.turn_on()
-sock.sendto(f"ctb {Stavanger_station.location} ".encode(), ("localhost", 8800))
+    def sendData(self):
+        #print(f"{self.station.location},{time}, {self.station.temperature}, {self.station.rain}") #DebugPrint
+        self.sock.sendto(
+            f"{self.station.location},{time}, {self.station.temperature}, {self.station.rain}".encode(),
+            ("localhost", 8800))
 
+    def startWeatherStation(self):
+        self.station.turn_on()
+        self.createDatabase()
 
-for _ in range(20):
-    sleep(1)
-    print("sending new data")
-    time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    sock.sendto(
-        f"{Bergen_station.location},{time}, {Bergen_station.temperature}, {Bergen_station.rain}".encode(),
-        ("localhost", 8800)
-    )
-    sleep(1)
-    time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    sock.sendto(
-        f"{Oslo_station.location},{time}, {Oslo_station.temperature}, {Oslo_station.rain}".encode(),
-        ("localhost", 8800)
-    )
-    sleep(1)
-    time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    sock.sendto(
-        f"{Stavanger_station.location},{time}, {Stavanger_station.temperature}, {Stavanger_station.rain}".encode(),
-        ("localhost", 8800)
-    )
+def getTime():
+    return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-Bergen_station.shut_down()
-Oslo_station.shut_down()
-Stavanger_station.shut_down()
+if __name__ == '__main__':
+    sock = socket(AF_INET, SOCK_DGRAM)
+
+    Bergen_station = WeatherStation("Bergen", sock)
+    Bergen_station.startWeatherStation()
+    Oslo_station = WeatherStation("Oslo", sock)
+    Oslo_station.startWeatherStation()
+    Stavanger_station = WeatherStation("Stavanger", sock)
+    Stavanger_station.startWeatherStation()
+
+    for _ in range(20):
+        print("sending new data")
+        sleep(1)
+        time = getTime()
+        Bergen_station.sendData()
+        sleep(1)
+        time = getTime()
+        Oslo_station.sendData()
+        sleep(1)
+        time = getTime()
+        Stavanger_station.sendData()
+
+    Bergen_station.station.shut_down()
+    Oslo_station.station.shut_down()
+    Stavanger_station.station.shut_down()
