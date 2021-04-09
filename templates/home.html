@@ -1,8 +1,86 @@
-<!DOCTYPE html>
-<html>
-<body>
+<html style="height: 100%;margin: 0;font-family: 'Poppins', sans-serif;">
+<head>
+	<title>CSS Weather Widget</title>
 
-<h1>Dette er Flask homepagen vår</h1>
+	<!-- Style CSS -->
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body style="height: 100%;margin: 0;font-family: 'Poppins', sans-serif;">
+	<!-- Background Image -->
+	<div style="background-image: url('https://res.cloudinary.com/simpleview/image/upload/v1574085889/clients/norway/bryggen_wharf_bergen_hordaland_fjord_norway_photo_florian_olbrechts_34ad36ea-f7bc-4150-b48b-af2c2c14628f.jpg');
+	height: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	filter: blur(20px);
+	-webkit-filter: blur(20px);"></div>
 
+	<div style="top: 50%;
+	left: 50%;
+	position: absolute;
+	transform: translate(-50%, -50%);">
+		<!-- Weather Widget -->
+		<div style="width: 400px;
+        height: 200px;
+        border-radius: 20px;
+        background: rgba(299, 299, 299, 0.4);">
+			<div style="position: absolute;
+            left: 0;
+            width: 200px;">
+				<img src="https://icon-library.com/images/cloudy-icon/cloudy-icon-19.jpg" style="width: 75%;
+                margin-bottom: -30px;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;">
+				<h5 style="color: #fff;
+                text-align: center;
+                margin-top: 0;">Partly Cloud</h5>
+			</div>
+			<div style="position: absolute;
+            right: 0;
+            width: 200px;
+            color: #fff;
+            margin: 50px 0;">
+				<h5 style="font-size: 1em;
+                text-align: center;
+                margin: 0;
+                text-shadow: 1px 1px 5px #707070;">Weather</h5>
+				<h5 style="font-size: 3em;
+                font-weight: bold;
+                text-align: center;
+                margin: 0;
+                text-shadow: 1px 1px 5px #707070;">3&#176;c</h5>
+			</div>
+			<div style="width: 100%;
+            position: absolute;
+            bottom: 10px;
+            display: flex;
+            justify-content: center;
+            color: #fff;">
+				<div style="margin: 5px 10px 5px 10px;
+                text-align: center;
+                line-height: 100%;
+                font-size: 0.83em;
+                text-shadow: 1px 1px 5px #707070;">
+					Wind Speed <span>22 kmph</span>
+				</div>
+				<div style="margin: 5px 10px 5px 10px;
+                text-align: center;
+                line-height: 100%;
+                font-size: 0.83em;
+                text-shadow: 1px 1px 5px #707070;">
+					Cloud Cover <span>22%</span>
+				</div>
+				<div style="margin: 5px 10px 5px 10px;
+                text-align: center;
+                line-height: 100%;
+                font-size: 0.83em;
+                text-shadow: 1px 1px 5px #707070;">
+					Pressure <span style="display: block;">1010 mb</span>
+				</div>
+			</div>
+		</div>
+		<!-- ./End of weather widget -->
+	</div>
 </body>
 </html>
