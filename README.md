@@ -5,8 +5,15 @@ pip install mysql-connector-python
 
 Flask
 1. Choose a folder and create a environment with:
+
       python3 -m venv env
+      
+      
 2. Activate evironment:
+
       $ . env/bin/activate
-3. Install Flask
+      
+      
+3. Install Flask:
+
       pip install Flask
