@@ -9,38 +9,65 @@ def create_dataBase(db_name):
     my_cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
 
 
+def determine_database(station_name):
+    if station_name.upper() == "OSLO":
+        return "east"
+    else:
+        return "west"
+
+
 def create_table(station_name):
-    print(f"table created with the name: {station_name}")
+    db_name = determine_database(station_name)
+    my_cursor.execute(f"USE {db_name};")
     my_cursor.execute(
-        f"CREATE TABLE IF NOT EXISTS {station_name} (DATA_TIME timestamp PRIMARY KEY, temperature LONGTEXT, precipitation VARCHAR(10));")
+        f"CREATE TABLE IF NOT EXISTS {station_name} (DATA_TIME timestamp PRIMARY KEY, temperature LONGTEXT, precipitation VARCHAR(10));"
+    )
+    print(f"table created with the name: {station_name}")
 
 
-# Where weather data will be stored
-server_address = ("localhost", 8888)
+def putMessage(data: str) -> None:
+    # Puts the message into the corresponding table
+    station_name, DATA_TIME, temperature, precipitation = data.split(",")
 
-udp_sock = socket(AF_INET, SOCK_DGRAM)
-
-udp_sock.bind(("localhost", 8800))
-
-tcp_sock = socket()
-tcp_sock.bind(server_address)
-tcp_sock.listen()
-
-
-def connect_tcp(sock):
-    conn, address = sock.accept()
-    print("accepted", conn, "from", address)
-    req = conn.recv(2048)
-
-    available_data = get(req.decode())
-
-    for data in available_data:
-        conn.sendall(f"Time: {data[0]} temperature: {data[1]} precipitation: {data[2]}\n".encode())
+    DATA_TIME = datetime.strptime(DATA_TIME, "%d/%m/%Y %H:%M:%S")
+    # temp= float(temperature)
+    print(station_name + " ", DATA_TIME, " " + temperature + " " + precipitation)
+    db_name = determine_database(station_name)
+    my_cursor.execute(f"USE {db_name};")
+    my_cursor.execute(
+        f"INSERT  INTO {station_name} VALUES ('{DATA_TIME}','{temperature}','{precipitation}');"
+    )
+    SQL_storage.commit()
 
 
-def connect_udp(sock):
-    data, address = sock.recvfrom(2048)
-    put(data)
+def get(loc, entire: str) -> bytes:
+    if entire == "whole":
+        return get_all(loc)
+    elif entire == "last":
+        return get_last(loc)
+
+
+def get_all(loc):
+    db_name = determine_database(loc)
+   # my_cursor.execute(f"USE {db_name};")
+    my_cursor.execute(f"SELECT * FROM {db_name}.{loc};")
+    data = my_cursor.fetchall()
+    print(data)
+    return data
+
+
+def get_last(loc):
+    db_name = determine_database(loc)
+    #my_cursor.execute(f"USE {db_name};")
+    my_cursor.execute(
+        f"SELECT * FROM {db_name}.{loc} WHERE DATA_TIME = (SELECT MAX(DATA_TIME) FROM {db_name}.{loc}) ;"
+    )
+
+    data = my_cursor.fetchall()
+
+    print("last data: ", data)
+
+    return data
 
 
 # Fetch data from text file
@@ -58,58 +85,37 @@ def put_in_file(text: bytes) -> None:
         f.write(text + b"\n")
 
 
-def get(entire: str) -> bytes:
-    if entire == "whole":
-        return get_all()
-    elif entire == "last":
-        return get_last()
-
-
-def get_all():
-    my_cursor.execute(f"SELECT * FROM weather.BERGEN;")
-    data = my_cursor.fetchall()
-    print(data)
-    return data
-
-
-def get_last():
-    my_cursor.execute(
-        f"SELECT * FROM WEATHER.Bergen WHERE DATA_TIME = (SELECT MAX(DATA_TIME) FROM WEATHER.Bergen) ;"
-    )
-
-    data = my_cursor.fetchall()
-    print("last data: ", data)
-    return data
-
-
-def put(text: bytes) -> None:
-    message = text.decode()
+def connect_udp(sock):
+    data, address = sock.recvfrom(2048)
+    message = data.decode()
     if message[0:3] == "ctb":
-        create_table(message[4:-1])
+        create_table(message[4:-1].upper())
     else:
         putMessage(message)
 
 
-def putMessage(data: str) -> None:
-    # Puts the message into the corresponding table
-    station_name, DATA_TIME, temperature, precipitation = data.split(",")
+def connect_tcp(sock):
+    conn, address = sock.accept()
+    print("accepted", conn, "from", address)
+    message = conn.recv(2048).decode()
 
-    DATA_TIME = datetime.strptime(DATA_TIME, "%d/%m/%Y %H:%M:%S")
-    # temp= float(temperature)
-    print(station_name + " ", DATA_TIME, " " + temperature + " " + precipitation)
-    my_cursor.execute(
-        f"INSERT  INTO {station_name} VALUES ('{DATA_TIME}','{temperature}','{precipitation}');"
-    )
-    SQL_storage.commit()
+    loc, req = message.split(";")
+
+    available_data = get(loc, req)
+
+    for data in available_data:
+        conn.sendall(f"Location: {loc} Time: {data[0]} temperature: {data[1]} precipitation: {data[2]}\n".encode())
+
 
 if __name__ == '__main__':
     # db_name = input("enter database name: ")
     # print("enter password for connect database: ")
     # password = input("enter password for connect database: ")
     # password = getpass()
-    SQL_storage = mysql.connector.connect(host='localhost', user='root', password='rykkje1011', database='weather')
+    SQL_storage = mysql.connector.connect(host='localhost', user='root', password='Sql96685204')
     my_cursor = SQL_storage.cursor()
-    create_dataBase("weather")
+    my_cursor.execute(f"CREATE DATABASE IF NOT EXISTS west")
+    my_cursor.execute(f"CREATE DATABASE IF NOT EXISTS east")
 
     # Where weather data will be stored
     server_address = ("localhost", 8888)

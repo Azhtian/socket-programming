@@ -1,21 +1,19 @@
 from socket import create_connection, socket, AF_INET, SOCK_STREAM
 
-sock= create_connection(("localhost", 8888))
-
+sock = create_connection(("localhost", 8888))
+print("Available locations:\n Oslo, Bergen, Stavanger....\n")
+loc = input("Choose location: ").upper()
+print(loc)
 print("Would you like to see whole weather forecast or just last update? \n whole/last ")
 request = input(">")
 if request.lower().startswith("w"):
-    sock.send("whole".encode())
+    sock.send(f"{loc};whole".encode())
 elif request.lower().startswith("l"):
-    sock.send("last".encode())
+    sock.send(f"{loc};last".encode())
 else:
     print("Invalid request!")
 
-
-while True:
-    data = sock.recv(2048)
+while data := sock.recv(2048):
     print(data.decode())
-    if not data:
-        break
 
 sock.close()
